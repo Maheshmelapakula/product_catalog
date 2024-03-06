@@ -1,7 +1,8 @@
-// ProductCatalog.js
+// src/components/ProductCatalog.js
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const ProductCatalog = () => {
   const [products, setProducts] = useState([]);
@@ -22,14 +23,21 @@ const ProductCatalog = () => {
     fetchProducts();
   }, []);
 
-  const addNewProductRow = () => {
-    const newProduct = {
-      name: '',
-      description: '',
-      price: 0,
-    };
+  const addNewProductRow = async () => {
+    try {
+      const newProduct = {
+        name: '',
+        description: '',
+        price: 0,
+      };
 
-    setProducts([...products, newProduct]);
+      const response = await axios.post('http://localhost:4001/product/createproduct', newProduct);
+      const updatedProducts = [...products, response.data];
+      setProducts(updatedProducts);
+      setEditMode(response.data._id);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const enterEditMode = (productId) => {
